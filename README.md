@@ -12,6 +12,8 @@ Mode: At Least Once
 The output will be bucketed by second to `$(pwd)/text`. Each part file should
 be a gzip compressed tarball.
 
+One of these corrupt part files is available in the `./example-output` directory.
+
 ## Problem
 
 Even with checkpointing enabled, the compressed files seem cut short. Sometimes the in-progress
