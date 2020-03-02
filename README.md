@@ -2,10 +2,10 @@
 
 ## Checkpoint Config:
 
-Interval: 1s
-Timeout: 10s
-Min Pause: 500ms
-Mode: At Least Once
+Interval: 1s  
+Timeout: 10s  
+Min Pause: 500ms  
+Mode: At Least Once  
 
 ## Output
 
