@@ -6,26 +6,38 @@ import org.apache.flink.runtime.state.FunctionInitializationContext;
 import org.apache.flink.runtime.state.FunctionSnapshotContext;
 import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class IncrementingRecordSource implements SourceFunction<Record>, CheckpointedFunction {
+public class UnboundedIncrementingRecordSource implements SourceFunction<Record>, CheckpointedFunction {
+  private static final Logger LOG = LoggerFactory.getLogger(UnboundedIncrementingRecordSource.class);
   private final long maxCount;
   private long count = 0L;
   private volatile boolean isRunning = true;
 
   private transient ListState<Long> checkpointedCount;
 
-  public IncrementingRecordSource(long maxCount) {
+  public UnboundedIncrementingRecordSource(long maxCount) {
     this.maxCount = maxCount;
   }
 
   public void run(SourceContext<Record> ctx) throws InterruptedException {
-    while (isRunning && count <= maxCount) {
+    while (isRunning) {
       // this synchronized block ensures that state checkpointing,
       // internal state updates and emission of elements are an atomic operation
       synchronized (ctx.getCheckpointLock()) {
-        ctx.collect(new Record(Long.toString(count)));
-        count++;
-        Thread.sleep(10);
+        if (count <= maxCount) {
+          LOG.info("Current count: {}", count);
+          ctx.collect(new Record(Long.toString(count)));
+
+          if (count == maxCount) {
+            LOG.info("FINAL COUNT REACHED");
+          }
+
+          count++;
+        }
+
+        Thread.sleep(100);
       }
     }
   }

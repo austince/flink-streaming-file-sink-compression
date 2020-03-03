@@ -66,9 +66,14 @@ public class StreamingJob {
 		checkpointConfig.setCheckpointingMode(CheckpointingMode.AT_LEAST_ONCE);
 
 		DataStream<Record> recordStream = env
-				.addSource(new IncrementingRecordSource(1000))
-				.name("Incrementing record source")
-				.uid("source");
+//				.addSource(new BoundedIncrementingRecordSource(1000))
+//				.name("Incrementing record source")
+//				.uid("source")
+
+				.addSource(new UnboundedIncrementingRecordSource(500))
+				.name("Unbounded Incrementing record source")
+				.uid("unbounded-source")
+				;
 
 		// cwd
 		String basePath = FileSystems.getDefault().getPath(".").toAbsolutePath().toString();
